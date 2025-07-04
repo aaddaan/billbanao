@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billbanao – Invoice Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100 p-4">
+
+  <!-- Invoice UI -->
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold text-red-600 text-center mb-4">billbanao.in</h1>
+
+    <!-- Shop Info -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <input type="text" id="shopName" placeholder="Your Shop Name" class="border p-2 rounded text-sm" />
+      <input type="text" id="customerName" placeholder="Customer Name" class="border p-2 rounded text-sm" />
+      <input type="text" id="invoiceNo" readonly class="border p-2 rounded text-sm" />
+    </div>
+
+    <!-- Item Table -->
+    <table class="w-full border text-sm mb-2">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border px-2 py-1">Item</th>
+          <th class="border px-2 py-1">Qty + Unit</th>
+          <th class="border px-2 py-1">Rate</th>
+          <th class="border px-2 py-1">Total</th>
+          <th class="border px-2 py-1">❌</th>
+        </tr>
+      </thead>
+      <tbody id="items"></tbody>
+    </table>
+    <button onclick="addRow()" class="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 text-sm">+ Add Item</button>
+
+    <!-- Total -->
+    <div class="text-right mt-4">
+      <label class="text-sm">GST % (optional)</label>
+      <input type="number" id="gst" class="border w-16 px-2 py-1 text-sm rounded" placeholder="0" onchange="calculateTotal()" />
+      <div class="text-lg font-bold mt-2">Grand Total: ₹<span id="grandTotal">0.00</span></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-2 mt-6">
+      <button onclick="downloadPDF()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">📄 Download PDF</button>
+      <button onclick="shareWhatsApp()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📤 Share on WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- PDF Hidden Layout -->
+  <div id="pdfPreview" class="hidden p-4">
+    <div class="border border-black p-4 rounded">
+      <div class="flex justify-between mb-2">
+        <div>
+          <h2 class="text-xl font-bold text-red-600" id="pdfShopName">Shop Name</h2>
+        </div>
+        <div class="text-right text-sm">
+          <p><strong>Invoice No:</strong> <span id="pdfInvoiceNo"></span></p>
+          <p><strong>Date:</strong> <span id="pdfDate"></span></p>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <strong>Customer:</strong> <span id="pdfCustomer"></span>
+      </div>
+
+      <table class="w-full border border-black border-collapse mb-3">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="border border-black px-2 py-1">Item</th>
+            <th class="border border-black px-2 py-1">Qty + Unit</th>
+            <th class="border border-black px-2 py-1">Rate</th>
+            <th class="border border-black px-2 py-1">Total</th>
+          </tr>
+        </thead>
+        <tbody id="pdfItems"></tbody>
+      </table>
+
+      <div class="text-right" id="pdfGSTBlock" style="display:none;">
+        <p><strong>GST %:</strong> <span id="pdfGST"></span>%</p>
+      </div>
+
+      <div class="text-right">
+        <p><strong>Grand Total:</strong> ₹<span id="pdfGrand"></span></p>
+      </div>
+
+      <p class="mt-4 text-center text-xs border-t pt-2">🙏 Thank you for using billbanao.in</p>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    document.getElementById("invoiceNo").value = "INV" + Math.floor(Math.random() * 9000 + 1000);
+    addRow();
+
+    function addRow() {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="border px-2"><input type="text" class="w-full itemName" placeholder="Item Name"></td>
+        <td class="border px-2">
+          <div class="flex gap-1">
+            <input type="number" class="w-1/2 itemQty" value="1" onchange="calculateTotal()">
+            <input type="text" class="w-1/2 itemUnit" placeholder="pcs">
+          </div>
+        </td>
+        <td class="border px-2"><input type="number" class="w-full itemRate" value="0" onchange="calculateTotal()"></td>
+        <td class="border itemTotal text-center">₹0.00</td>
+        <td class="border text-center"><button onclick="this.closest('tr').remove(); calculateTotal();">❌</button></td>
+      `;
+      document.getElementById("items").appendChild(row);
+    }
+
+    function calculateTotal() {
+      let total = 0;
+      document.querySelectorAll("#items tr").forEach(row => {
+        const qty = parseFloat(row.querySelector(".itemQty").value) || 0;
+        const rate = parseFloat(row.querySelector(".itemRate").value) || 0;
+        const totalCell = qty * rate;
+        row.querySelector(".itemTotal").innerText = "₹" + totalCell.toFixed(2);
+        total += totalCell;
+      });
+      const gst = parseFloat(document.getElementById("gst").value);
+      const totalWithGST = isNaN(gst) || gst <= 0 ? total : total + (total * gst / 100);
+      document.getElementById("grandTotal").innerText = totalWithGST.toFixed(2);
+    }
+
+    function downloadPDF() {
+      document.getElementById("pdfInvoiceNo").innerText = document.getElementById("invoiceNo").value;
+      document.getElementById("pdfDate").innerText = new Date().toLocaleDateString();
+      document.getElementById("pdfCustomer").innerText = document.getElementById("customerName").value;
+      document.getElementById("pdfShopName").innerText = document.getElementById("shopName").value || "Your Shop";
+
+      const gst = parseFloat(document.getElementById("gst").value);
+      if (!isNaN(gst) && gst > 0) {
+        document.getElementById("pdfGST").innerText = gst;
+        document.getElementById("pdfGSTBlock").style.display = "block";
+      } else {
+        document.getElementById("pdfGSTBlock").style.display = "none";
+      }
+
+      document.getElementById("pdfGrand").innerText = document.getElementById("grandTotal").innerText;
+
+      const pdfItems = document.getElementById("pdfItems");
+      pdfItems.innerHTML = "";
+      document.querySelectorAll("#items tr").forEach(row => {
+        const item = row.querySelector(".itemName").value;
+        const qty = row.querySelector(".itemQty").value;
+        const unit = row.querySelector(".itemUnit").value || "";
+        const rate = row.querySelector(".itemRate").value;
+        const total = qty * rate;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="border border-black px-2">${item}</td>
+          <td class="border border-black text-center">${qty} ${unit}</td>
+          <td class="border border-black text-center">₹${parseFloat(rate).toFixed(2)}</td>
+          <td class="border border-black text-center">₹${total.toFixed(2)}</td>
+        `;
+        pdfItems.appendChild(tr);
+      });
+
+      const element = document.getElementById("pdfPreview");
+      element.classList.remove("hidden");
+      html2pdf().from(element).save("invoice.pdf").then(() => {
+        element.classList.add("hidden");
+      });
+    }
+
+    function shareWhatsApp() {
+  calculateTotal(); // 🔥 Force calculate before sharing
+
+  const name = document.getElementById("customerName").value || "Customer";
+  const amount = document.getElementById("grandTotal").innerText;
+  const shop = document.getElementById("shopName").value || "Your Shop";
+  
+  const msg = `🧾 Hello ${name},\nHere is your bill from ${shop}.\nTotal: ₹${amount}.\nPay via UPI or download PDF.\nVisit: https://billbanao.netlify.app`;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}ss
+
+  </script>
+</body>
+</html>
