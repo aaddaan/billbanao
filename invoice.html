@@ -167,17 +167,43 @@
       });
     }
 
-    function shareWhatsApp() {
-  calculateTotal(); // 🔥 Force calculate before sharing
+
+function shareWhatsApp() {
+  calculateTotal(); // Ensure total is up to date
 
   const name = document.getElementById("customerName").value || "Customer";
-  const amount = document.getElementById("grandTotal").innerText;
   const shop = document.getElementById("shopName").value || "Your Shop";
-  
-  const msg = `🧾 Hello ${name},\nHere is your bill from ${shop}.\nTotal: ₹${amount}.\nPay via UPI or download PDF.\nVisit: https://billbanao.netlify.app`;
+  const invoiceNo = document.getElementById("invoiceNo").value;
+  const date = new Date().toLocaleDateString();
+  const gst = document.getElementById("gst").value;
+  const grandTotal = document.getElementById("grandTotal").innerText;
+
+  let itemsText = "";
+  document.querySelectorAll("#items tr").forEach(row => {
+    const item = row.querySelector(".itemName").value;
+    const qty = row.querySelector(".itemQty").value;
+    const rate = row.querySelector(".itemRate").value;
+    const total = qty * rate;
+    if (item.trim() !== "") {
+      itemsText += `- ${item} (${qty} x ₹${rate}) = ₹${total.toFixed(2)}\n`;
+    }
+  });
+
+  const msg = 
+    `🧾 Bill from ${shop}\n\n` +
+    `👤 Customer: ${name}\n` +
+    `📅 Date: ${date}\n` +
+    `🧮 Invoice No: ${invoiceNo}\n\n` +
+    `Items:\n${itemsText}\n` +
+    `GST: ${gst}%\n` +
+    `Grand Total: ₹${grandTotal}\n\n` +
+    `🙏 Thank you for shopping!\n` +
+    `https://billbanao.netlify.app`;
 
   window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-}ss
+}
+
+
 
   </script>
 </body>
