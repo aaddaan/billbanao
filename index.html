@@ -21,14 +21,16 @@
   <link rel="canonical" href="https://billbanao.in/" />
 
   <!-- Favicon -->
-  <link rel="icon" href="logo.png" />
-
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="logo.png" />
+  <link rel="icon" href="logo.png" type="image/png" />
   <link rel="apple-touch-icon" href="logo.png" />
   <meta name="theme-color" content="#dc2626" />
 
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+
+  <!-- Performance Optimizations -->
+  <link rel="preload" href="logo.png" as="image">
+  <link rel="preload" href="qr.png" as="image">
 </head>
 
 <body class="bg-white text-gray-800">
@@ -41,6 +43,7 @@
   <!-- 🔴 Navbar -->
   <nav class="bg-red-600 text-white py-3 px-4 flex justify-between items-center shadow">
     <div class="flex items-center space-x-2">
+      <img src="logo.png" alt="BillBanao Logo" class="h-6 w-6 rounded-full" loading="lazy" decoding="async">
       <h1 class="text-lg font-bold">billbanao.in</h1>
     </div>
     <a href="invoice.html" class="bg-white text-red-600 px-4 py-1 rounded font-medium text-sm hover:bg-red-100">
@@ -59,65 +62,64 @@
     </a>
   </section>
 
- <!-- 💎 Features Section -->
-<section class="px-4 py-10 bg-gray-50">
-  <h3 class="text-xl font-bold text-center mb-6">💎 Sab Kuch Free, Premium Jaise!</h3>
-  <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto text-sm">
+  <!-- 💎 Features Section -->
+  <section class="px-4 py-10 bg-gray-50">
+    <h3 class="text-xl font-bold text-center mb-6">💎 Sab Kuch Free, Premium Jaise!</h3>
+    <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto text-sm">
 
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">📄 PDF Download</h4>
-      <p>Professional invoice bana ke turant PDF download karo – ready to print ya share karne ke liye.</p>
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">📄 PDF Download</h4>
+        <p>Professional invoice bana ke turant PDF download karo – ready to print ya share karne ke liye.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">📤 WhatsApp Share</h4>
+        <p>Invoice banate hi direct WhatsApp pe bhejne ka feature – bina kisi app ke.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">🧾 Auto Invoice Number</h4>
+        <p>System har bill ke liye alag invoice number banata hai – aapko kuch karna nahi.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">🧮 GST + Grand Total</h4>
+        <p>GST % daalo aur grand total auto calculate hoga – perfect for Indian dukandars.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">🛒 Multiple Items + Units</h4>
+        <p>Jitne chaaho items add karo (pcs, kg, ltr...) – full control in your hands.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">📆 Auto Date</h4>
+        <p>Bill banate waqt date khud add hoti hai – aapko yaad bhi nahi rakhna padta.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">💬 Hindi-English Friendly</h4>
+        <p>Pura UI simple aur Hindi-English dono samajhne layak – sabke liye easy.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">📱 100% Mobile Friendly</h4>
+        <p>Mobile pe super fast load hota hai – koi bhi use kar sakta hai bina sikhe.</p>
+      </div>
+
+      <div class="bg-white border rounded-xl p-4 shadow">
+        <h4 class="font-bold text-red-600 mb-1">🚀 No Login Needed</h4>
+        <p>Free version me seedha use karo – bina signup/login ke.</p>
+      </div>
+
     </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">📤 WhatsApp Share</h4>
-      <p>Invoice banate hi direct WhatsApp pe bhejne ka feature – bina kisi app ke.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">🧾 Auto Invoice Number</h4>
-      <p>System har bill ke liye alag invoice number banata hai – aapko kuch karna nahi.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">🧮 GST + Grand Total</h4>
-      <p>GST % daalo aur grand total auto calculate hoga – perfect for Indian dukandars.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">🛒 Multiple Items + Units</h4>
-      <p>Jitne chaaho items add karo (pcs, kg, ltr...) – full control in your hands.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">📆 Auto Date</h4>
-      <p>Bill banate waqt date khud add hoti hai – aapko yaad bhi nahi rakhna padta.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">💬 Hindi-English Friendly</h4>
-      <p>Pura UI simple aur Hindi-English dono samajhne layak – sabke liye easy.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">📱 100% Mobile Friendly</h4>
-      <p>Mobile pe super fast load hota hai – koi bhi use kar sakta hai bina sikhe.</p>
-    </div>
-
-    <div class="bg-white border rounded-xl p-4 shadow">
-      <h4 class="font-bold text-red-600 mb-1">🚀 No Login Needed</h4>
-      <p>Free version me seedha use karo – bina signup/login ke.</p>
-    </div>
-
-  </div>
-</section>
-
+  </section>
 
   <!-- 🙏 UPI Support CTA -->
   <section class="py-10 px-4 text-center">
     <h3 class="text-lg font-semibold mb-2 text-gray-700">Aapke support se hi yeh tool free hai ❤️</h3>
     <p class="text-sm text-gray-600 mb-4">Agar aapko hamara kaam pasand aaye, toh UPI se chhota sa support zarur karein 🙏</p>
-    <img src="qr.png" alt="UPI QR Support - BillBanao" class="mx-auto w-32 h-32 border shadow rounded" />
+    <img src="qr.png" alt="UPI QR Support - BillBanao" class="mx-auto w-32 h-32 border shadow rounded" loading="lazy" decoding="async" />
     <p class="mt-2 text-xs text-gray-500">UPI ID : aaddaan2@okicici</p>
   </section>
 
