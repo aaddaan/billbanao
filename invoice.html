@@ -99,36 +99,34 @@
     document.getElementById("invoiceNo").value = "INV" + Math.floor(Math.random() * 9000 + 1000);
     addRow();
 
-    function addRow() {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td class="border px-2"><input type="text" class="w-full itemName" placeholder="Item Name"></td>
-        <td class="border px-2">
-          <div class="flex gap-1">
-            <input type="number" class="w-1/2 itemQty" value="1" onchange="calculateTotal()">
-            <input type="text" class="w-1/2 itemUnit" placeholder="pcs">
-          </div>
-        </td>
-        <td class="border px-2"><input type="number" class="w-full itemRate" value="0" onchange="calculateTotal()"></td>
-        <td class="border itemTotal text-center">₹0.00</td>
-        <td class="border text-center"><button onclick="this.closest('tr').remove(); calculateTotal();">❌</button></td>
-      `;
-      document.getElementById("items").appendChild(row);
-    }
+   function addRow() {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td class="border px-2"><input type="text" class="w-full itemName" placeholder="Item Name"></td>
+    <td class="border px-2">
+      <div class="flex gap-1">
+        <input type="number" class="w-1/2 itemQty" value="1">
+        <input type="text" class="w-1/2 itemUnit" placeholder="pcs">
+      </div>
+    </td>
+    <td class="border px-2"><input type="number" class="w-full itemRate" placeholder="Rate"></td>
+    <td class="border px-2"><input type="number" class="w-full itemManualTotal" placeholder="Total" onchange="calculateTotal()"></td>
+    <td class="border text-center"><button onclick="this.closest('tr').remove(); calculateTotal();">❌</button></td>
+  `;
+  document.getElementById("items").appendChild(row);
+}
 
-    function calculateTotal() {
-      let total = 0;
-      document.querySelectorAll("#items tr").forEach(row => {
-        const qty = parseFloat(row.querySelector(".itemQty").value) || 0;
-        const rate = parseFloat(row.querySelector(".itemRate").value) || 0;
-        const totalCell = qty * rate;
-        row.querySelector(".itemTotal").innerText = "₹" + totalCell.toFixed(2);
-        total += totalCell;
-      });
-      const gst = parseFloat(document.getElementById("gst").value);
-      const totalWithGST = isNaN(gst) || gst <= 0 ? total : total + (total * gst / 100);
-      document.getElementById("grandTotal").innerText = totalWithGST.toFixed(2);
-    }
+
+  function calculateTotal() {
+  let total = 0;
+  document.querySelectorAll(".itemManualTotal").forEach(input => {
+    total += parseFloat(input.value) || 0;
+  });
+  const gst = parseFloat(document.getElementById("gst").value);
+  const totalWithGST = isNaN(gst) || gst <= 0 ? total : total + (total * gst / 100);
+  document.getElementById("grandTotal").innerText = totalWithGST.toFixed(2);
+}
+
 
     function downloadPDF() {
       document.getElementById("pdfInvoiceNo").innerText = document.getElementById("invoiceNo").value;
