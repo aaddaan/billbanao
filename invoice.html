@@ -4,12 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Billbanao – Invoice Generator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- SEO (prevent indexing this page) -->
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="author" content="billbanao.in" />
+
+  <!-- Preload (for future logo or qr usage) -->
+  <link rel="preload" href="logo.png" as="image">
+  <link rel="preload" href="qr.png" as="image">
+
+  <!-- Tailwind & PDF Generator -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+
+  <!-- Favicon -->
+  <link rel="icon" href="logo.png" />
+  <meta name="theme-color" content="#dc2626" />
 </head>
+
 <body class="bg-gray-100 p-4">
 
-  <!-- Invoice UI -->
+  <!-- 💳 Invoice UI -->
   <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
     <h1 class="text-2xl font-bold text-red-600 text-center mb-4">billbanao.in</h1>
 
@@ -35,7 +50,7 @@
     </table>
     <button onclick="addRow()" class="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 text-sm">+ Add Item</button>
 
-    <!-- Total -->
+    <!-- Total & GST -->
     <div class="text-right mt-4">
       <label class="text-sm">GST % (optional)</label>
       <input type="number" id="gst" class="border w-16 px-2 py-1 text-sm rounded" placeholder="0" onchange="calculateTotal()" />
@@ -49,23 +64,17 @@
     </div>
   </div>
 
-  <!-- PDF Hidden Layout -->
+  <!-- Hidden PDF Layout -->
   <div id="pdfPreview" class="hidden p-4">
     <div class="border border-black p-4 rounded">
       <div class="flex justify-between mb-2">
-        <div>
-          <h2 class="text-xl font-bold text-red-600" id="pdfShopName">Shop Name</h2>
-        </div>
+        <div><h2 class="text-xl font-bold text-red-600" id="pdfShopName">Shop Name</h2></div>
         <div class="text-right text-sm">
           <p><strong>Invoice No:</strong> <span id="pdfInvoiceNo"></span></p>
           <p><strong>Date:</strong> <span id="pdfDate"></span></p>
         </div>
       </div>
-
-      <div class="mb-2">
-        <strong>Customer:</strong> <span id="pdfCustomer"></span>
-      </div>
-
+      <div class="mb-2"><strong>Customer:</strong> <span id="pdfCustomer"></span></div>
       <table class="w-full border border-black border-collapse mb-3">
         <thead>
           <tr class="bg-gray-200">
@@ -77,20 +86,15 @@
         </thead>
         <tbody id="pdfItems"></tbody>
       </table>
-
       <div class="text-right" id="pdfGSTBlock" style="display:none;">
         <p><strong>GST %:</strong> <span id="pdfGST"></span>%</p>
       </div>
-
-      <div class="text-right">
-        <p><strong>Grand Total:</strong> ₹<span id="pdfGrand"></span></p>
-      </div>
-
+      <div class="text-right"><p><strong>Grand Total:</strong> ₹<span id="pdfGrand"></span></p></div>
       <p class="mt-4 text-center text-xs border-t pt-2">🙏 Thank you for using billbanao.in</p>
     </div>
   </div>
 
-  <!-- Script -->
+  <!-- 💻 Scripts (placed at end for performance) -->
   <script>
     document.getElementById("invoiceNo").value = "INV" + Math.floor(Math.random() * 9000 + 1000);
     addRow();
@@ -167,44 +171,40 @@
       });
     }
 
+    function shareWhatsApp() {
+      calculateTotal();
 
-function shareWhatsApp() {
-  calculateTotal(); // Ensure total is up to date
+      const name = document.getElementById("customerName").value || "Customer";
+      const shop = document.getElementById("shopName").value || "Your Shop";
+      const invoiceNo = document.getElementById("invoiceNo").value;
+      const date = new Date().toLocaleDateString();
+      const gst = document.getElementById("gst").value || "0";
+      const grandTotal = document.getElementById("grandTotal").innerText;
 
-  const name = document.getElementById("customerName").value || "Customer";
-  const shop = document.getElementById("shopName").value || "Your Shop";
-  const invoiceNo = document.getElementById("invoiceNo").value;
-  const date = new Date().toLocaleDateString();
-  const gst = document.getElementById("gst").value;
-  const grandTotal = document.getElementById("grandTotal").innerText;
+      let itemsText = "";
+      document.querySelectorAll("#items tr").forEach(row => {
+        const item = row.querySelector(".itemName").value;
+        const qty = row.querySelector(".itemQty").value;
+        const rate = row.querySelector(".itemRate").value;
+        const total = qty * rate;
+        if (item.trim() !== "") {
+          itemsText += `- ${item} (${qty} x ₹${rate}) = ₹${total.toFixed(2)}\n`;
+        }
+      });
 
-  let itemsText = "";
-  document.querySelectorAll("#items tr").forEach(row => {
-    const item = row.querySelector(".itemName").value;
-    const qty = row.querySelector(".itemQty").value;
-    const rate = row.querySelector(".itemRate").value;
-    const total = qty * rate;
-    if (item.trim() !== "") {
-      itemsText += `- ${item} (${qty} x ₹${rate}) = ₹${total.toFixed(2)}\n`;
+      const msg =
+        `🧾 Bill from ${shop}\n\n` +
+        `👤 Customer: ${name}\n` +
+        `📅 Date: ${date}\n` +
+        `🧮 Invoice No: ${invoiceNo}\n\n` +
+        `Items:\n${itemsText}\n` +
+        `GST: ${gst}%\n` +
+        `Grand Total: ₹${grandTotal}\n\n` +
+        `🙏 Thank you for shopping!\n` +
+        `https://billbanao.in`;
+
+      window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
     }
-  });
-
-  const msg = 
-    `🧾 Bill from ${shop}\n\n` +
-    `👤 Customer: ${name}\n` +
-    `📅 Date: ${date}\n` +
-    `🧮 Invoice No: ${invoiceNo}\n\n` +
-    `Items:\n${itemsText}\n` +
-    `GST: ${gst}%\n` +
-    `Grand Total: ₹${grandTotal}\n\n` +
-    `🙏 Thank you for shopping!\n` +
-    `https://billbanao.netlify.app`;
-
-  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-}
-
-
-
   </script>
 </body>
 </html>
