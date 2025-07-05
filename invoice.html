@@ -128,81 +128,87 @@
 }
 
 
-    function downloadPDF() {
-      document.getElementById("pdfInvoiceNo").innerText = document.getElementById("invoiceNo").value;
-      document.getElementById("pdfDate").innerText = new Date().toLocaleDateString();
-      document.getElementById("pdfCustomer").innerText = document.getElementById("customerName").value;
-      document.getElementById("pdfShopName").innerText = document.getElementById("shopName").value || "Your Shop";
+  function downloadPDF() {
+    document.getElementById("pdfInvoiceNo").innerText = document.getElementById("invoiceNo").value;
+    document.getElementById("pdfDate").innerText = new Date().toLocaleDateString();
+    document.getElementById("pdfCustomer").innerText = document.getElementById("customerName").value;
+    document.getElementById("pdfShopName").innerText = document.getElementById("shopName").value || "Your Shop";
 
-      const gst = parseFloat(document.getElementById("gst").value);
-      if (!isNaN(gst) && gst > 0) {
-        document.getElementById("pdfGST").innerText = gst;
-        document.getElementById("pdfGSTBlock").style.display = "block";
-      } else {
-        document.getElementById("pdfGSTBlock").style.display = "none";
-      }
+    const gst = parseFloat(document.getElementById("gst").value);
+    if (!isNaN(gst) && gst > 0) {
+      document.getElementById("pdfGST").innerText = gst;
+      document.getElementById("pdfGSTBlock").style.display = "block";
+    } else {
+      document.getElementById("pdfGSTBlock").style.display = "none";
+    }
 
-      document.getElementById("pdfGrand").innerText = document.getElementById("grandTotal").innerText;
+    document.getElementById("pdfGrand").innerText = document.getElementById("grandTotal").innerText;
 
-      const pdfItems = document.getElementById("pdfItems");
-      pdfItems.innerHTML = "";
-      document.querySelectorAll("#items tr").forEach(row => {
-        const item = row.querySelector(".itemName").value;
-        const qty = row.querySelector(".itemQty").value;
-        const unit = row.querySelector(".itemUnit").value || "";
-        const rate = row.querySelector(".itemRate").value;
-        const total = qty * rate;
+    const pdfItems = document.getElementById("pdfItems");
+    pdfItems.innerHTML = "";
+    document.querySelectorAll("#items tr").forEach(row => {
+      const item = row.querySelector(".itemName").value;
+      const qty = row.querySelector(".itemQty").value;
+      const unit = row.querySelector(".itemUnit").value || "";
+      const rate = row.querySelector(".itemRate").value;
+
+      if (item.trim() !== "") {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="border border-black px-2">${item}</td>
           <td class="border border-black text-center">${qty} ${unit}</td>
           <td class="border border-black text-center">₹${parseFloat(rate).toFixed(2)}</td>
-          <td class="border border-black text-center">₹${total.toFixed(2)}</td>
+          <td class="border border-black text-center">₹${parseFloat(rate).toFixed(2)}</td>
         `;
         pdfItems.appendChild(tr);
-      });
+      }
+    });
 
-      const element = document.getElementById("pdfPreview");
-      element.classList.remove("hidden");
-      html2pdf().from(element).save("invoice.pdf").then(() => {
-        element.classList.add("hidden");
-      });
-    }
+    const element = document.getElementById("pdfPreview");
+    element.classList.remove("hidden");
+    html2pdf().from(element).save("invoice.pdf").then(() => {
+      element.classList.add("hidden");
+    });
+  }
 
-    function shareWhatsApp() {
-      calculateTotal();
 
-      const name = document.getElementById("customerName").value || "Customer";
-      const shop = document.getElementById("shopName").value || "Your Shop";
-      const invoiceNo = document.getElementById("invoiceNo").value;
-      const date = new Date().toLocaleDateString();
-      const gst = document.getElementById("gst").value || "0";
-      const grandTotal = document.getElementById("grandTotal").innerText;
 
-      let itemsText = "";
-      document.querySelectorAll("#items tr").forEach(row => {
-        const item = row.querySelector(".itemName").value;
-        const qty = row.querySelector(".itemQty").value;
-        const rate = row.querySelector(".itemRate").value;
-        const total = qty * rate;
-        if (item.trim() !== "") {
-          itemsText += `- ${item} (${qty} x ₹${rate}) = ₹${total.toFixed(2)}\n`;
-        }
-      });
+  function shareWhatsApp() {
+    calculateTotal(); // Ensure total is up to date
 
-      const msg =
-        `🧾 Bill from ${shop}\n\n` +
-        `👤 Customer: ${name}\n` +
-        `📅 Date: ${date}\n` +
-        `🧮 Invoice No: ${invoiceNo}\n\n` +
-        `Items:\n${itemsText}\n` +
-        `GST: ${gst}%\n` +
-        `Grand Total: ₹${grandTotal}\n\n` +
-        `🙏 Thank you for shopping!\n` +
-        `https://billbanao.in`;
+    const name = document.getElementById("customerName").value || "Customer";
+    const shop = document.getElementById("shopName").value || "Your Shop";
+    const invoiceNo = document.getElementById("invoiceNo").value;
+    const date = new Date().toLocaleDateString();
+    const gst = document.getElementById("gst").value || "0";
+    const grandTotal = document.getElementById("grandTotal").innerText;
 
-      window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-    }
+    let itemsText = "";
+    document.querySelectorAll("#items tr").forEach(row => {
+      const item = row.querySelector(".itemName").value;
+      const qty = row.querySelector(".itemQty").value;
+      const unit = row.querySelector(".itemUnit").value || "";
+      const rate = row.querySelector(".itemRate").value;
+      
+      if (item.trim() !== "") {
+        itemsText += `- ${item} (${qty} ${unit}) = ₹${parseFloat(rate).toFixed(2)}\n`;
+      }
+    });
+
+    const msg = 
+      `🧾 Bill from ${shop}\n\n` +
+      `👤 Customer: ${name}\n` +
+      `📅 Date: ${date}\n` +
+      `🧮 Invoice No: ${invoiceNo}\n\n` +
+      `Items:\n${itemsText}\n` +
+      `GST: ${gst}%\n` +
+      `Grand Total: ₹${grandTotal}\n\n` +
+      `🙏 Thank you for shopping!\n` +
+      `https://billbanao.in`;
+
+    window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+  }
+
   </script>
 </body>
 </html>
